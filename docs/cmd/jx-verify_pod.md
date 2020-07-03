@@ -27,7 +27,7 @@ pod [command]
 
 ### SEE ALSO
 
-* [jx-verify](jx-verify.md)	 - boots up Jenkins and/or Jenkins X in a Kubernetes cluster using GitOps
+* [jx-verify](jx-verify.md)	 - commands for verifying Jenkins X environments
 * [jx-verify pod count](jx-verify_pod_count.md)	 - Performs deployment verification in a pipeline
 * [jx-verify pod ready](jx-verify_pod_ready.md)	 - Verifies all the pods are ready
 

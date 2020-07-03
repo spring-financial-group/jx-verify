@@ -1,6 +1,6 @@
 ## jx-verify
 
-boots up Jenkins and/or Jenkins X in a Kubernetes cluster using GitOps
+commands for verifying Jenkins X environments
 
 ### Usage
 
@@ -10,7 +10,7 @@ jx-verify
 
 ### Synopsis
 
-boots up Jenkins and/or Jenkins X in a Kubernetes cluster using GitOps
+commands for verifying Jenkins X environments
 
 ### Options
 
