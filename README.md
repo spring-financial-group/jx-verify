@@ -1,4 +1,4 @@
-# jx admin
+# jx verify
 
 [![Documentation](https://godoc.org/github.com/jenkins-x/jx-verify?status.svg)](https://pkg.go.dev/mod/github.com/jenkins-x/jx-verify)
 [![Go Report Card](https://goreportcard.com/badge/github.com/jenkins-x/jx-verify)](https://goreportcard.com/report/github.com/jenkins-x/jx-verify)
