@@ -29,13 +29,24 @@ func Main() *cobra.Command {
 	commonOpts := opts.NewCommonOptionsWithTerm(f, os.Stdin, os.Stdout, os.Stderr)
 	commonOpts.AddBaseFlags(cmd)
 
-	
+	verifyIngress := verify.NewCmdStepVerifyIngress(commonOpts)
+	flag := verifyIngress.Flag("ingress-namespace")
+	if flag != nil {
+		flag.Value.Set("nginx")
+		flag.DefValue = "nginx"
+	}
+	flag = verifyIngress.Flag("ingress-service")
+	if flag != nil {
+		flag.Value.Set("nginx-ingress-controller")
+		flag.DefValue = "nginx-ingress-controller"
+	}
+
 	cmd.AddCommand(verify.NewCmdStepVerifyBehavior(commonOpts))
 	cmd.AddCommand(verify.NewCmdStepVerifyDependencies(commonOpts))
 	cmd.AddCommand(verify.NewCmdStepVerifyDNS(commonOpts))
 	cmd.AddCommand(verify.NewCmdStepVerifyEnvironments(commonOpts))
 	cmd.AddCommand(verify.NewCmdStepVerifyGit(commonOpts))
-	cmd.AddCommand(verify.NewCmdStepVerifyIngress(commonOpts))
+	cmd.AddCommand(verifyIngress)
 	cmd.AddCommand(verify.NewCmdStepVerifyInstall(commonOpts))
 	cmd.AddCommand(verify.NewCmdStepVerifyPackages(commonOpts))
 	cmd.AddCommand(verify.NewCmdStepVerifyPod(commonOpts))
