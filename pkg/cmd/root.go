@@ -9,6 +9,7 @@ import (
 	"github.com/jenkins-x/jx-verify/pkg/rootcmd"
 	"github.com/jenkins-x/jx/v2/pkg/cmd/clients"
 	"github.com/jenkins-x/jx/v2/pkg/cmd/opts"
+	"github.com/jenkins-x/jx/v2/pkg/cmd/update"
 	"github.com/jenkins-x/jx/v2/pkg/cmd/step/verify"
 	"github.com/spf13/cobra"
 )
@@ -54,6 +55,7 @@ func Main() *cobra.Command {
 	cmd.AddCommand(verify.NewCmdStepVerifyRequirements(commonOpts))
 	cmd.AddCommand(verify.NewCmdStepVerifyURL(commonOpts))
 	cmd.AddCommand(verify.NewCmdStepVerifyValues(commonOpts))
+	cmd.AddCommand(update.NewCmdUpdateWebhooks(commonOpts))
 	cmd.AddCommand(cobras.SplitCommand(version.NewCmdVersion()))
 
 	return cmd
