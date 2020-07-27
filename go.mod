@@ -1,13 +1,16 @@
 module github.com/jenkins-x/jx-verify
 
 require (
+	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cpuguy83/go-md2man v1.0.10
+	github.com/genkiroid/cert v0.0.0-20191007122723-897560fbbe50
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/jenkins-x/go-scm v1.5.143 // indirect
 	github.com/jenkins-x/jx-helpers v1.0.22
 	github.com/jenkins-x/jx-logging v0.0.10
 	github.com/jenkins-x/jx/v2 v2.1.90
 	github.com/mattn/go-colorable v0.1.6 // indirect
+	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.5
 	golang.org/x/crypto v0.0.0-20200219234226-1ad67e1f0ef4 // indirect

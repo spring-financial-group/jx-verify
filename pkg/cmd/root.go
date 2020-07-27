@@ -5,6 +5,7 @@ import (
 
 	"github.com/jenkins-x/jx-helpers/pkg/cobras"
 	"github.com/jenkins-x/jx-logging/pkg/log"
+	"github.com/jenkins-x/jx-verify/pkg/cmd/tls"
 	"github.com/jenkins-x/jx-verify/pkg/cmd/version"
 	"github.com/jenkins-x/jx-verify/pkg/rootcmd"
 	"github.com/jenkins-x/jx/v2/pkg/cmd/clients"
@@ -56,6 +57,7 @@ func Main() *cobra.Command {
 	cmd.AddCommand(verify.NewCmdStepVerifyURL(commonOpts))
 	cmd.AddCommand(verify.NewCmdStepVerifyValues(commonOpts))
 	cmd.AddCommand(update.NewCmdUpdateWebhooks(commonOpts))
+	cmd.AddCommand(cobras.SplitCommand(tls.NewCmdVerifyTLS()))
 	cmd.AddCommand(cobras.SplitCommand(version.NewCmdVersion()))
 
 	return cmd
