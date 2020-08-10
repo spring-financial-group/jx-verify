@@ -4,11 +4,10 @@ require (
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cpuguy83/go-md2man v1.0.10
 	github.com/genkiroid/cert v0.0.0-20191007122723-897560fbbe50
-	github.com/jenkins-x/go-scm v1.5.153 // indirect
-	github.com/jenkins-x/jx-api v0.0.17 // indirect
-	github.com/jenkins-x/jx-helpers v1.0.34
+	github.com/jenkins-x/jx-helpers v1.0.36
 	github.com/jenkins-x/jx-logging v0.0.11
-	github.com/jenkins-x/jx/v2 v2.1.121
+	github.com/jenkins-x/jx/v2 v2.1.130
+	github.com/jenkins-x/lighthouse v0.0.710 // indirect
 	github.com/mattn/go-colorable v0.1.6 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.0.0
