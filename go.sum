@@ -795,6 +795,7 @@ github.com/jenkins-x/draft-repo v0.0.0-20180417100212-2f66cc518135 h1:3zy/Nvdi9V
 github.com/jenkins-x/draft-repo v0.0.0-20180417100212-2f66cc518135/go.mod h1:K/L25ViEpDx196rOZyjn433tAM5zr2F/IouK+3g+DkE=
 github.com/jenkins-x/go-scm v1.5.117/go.mod h1:PCT338UhP/pQ0IeEeMEf/hoLTYKcH7qjGEKd7jPkeYg=
 github.com/jenkins-x/go-scm v1.5.157/go.mod h1:Gt1dJz1rH47GbMlL47mWkibKHAM5+htwzOpsGmEbvfg=
+github.com/jenkins-x/go-scm v1.5.159/go.mod h1:Gt1dJz1rH47GbMlL47mWkibKHAM5+htwzOpsGmEbvfg=
 github.com/jenkins-x/go-scm v1.5.160 h1:1OixAnfXn+3Ymxq3suALpJq7PilmpxKl62S6mO/woXM=
 github.com/jenkins-x/go-scm v1.5.160/go.mod h1:wJgj7PfgsCs+YAXC0vEj43g48HKf94apSyza62ADxKY=
 github.com/jenkins-x/golang-jenkins v0.0.0-20180919102630-65b83ad42314 h1:kyBMx/ucSV92S+umX/V6DDaPNynlFFOM9MGJWApltoU=
@@ -812,7 +813,10 @@ github.com/jenkins-x/jx-logging v0.0.11 h1:t4T653u6oy4SJ2VYlrY5rIobr16jJS9Gf8RWl
 github.com/jenkins-x/jx-logging v0.0.11/go.mod h1:mjEejiArk2Mk+J+72/YcSKGo9bZlJ/LwKYjMgAiv+G4=
 github.com/jenkins-x/jx/v2 v2.1.140 h1:3YCCyfb5zVDj4m8von9HpUJ5wEB+TXSxPZ1Swm0Xv78=
 github.com/jenkins-x/jx/v2 v2.1.140/go.mod h1:M+hrTFGm5f+HNTjHd9+yZlkqZRT/eh+7npE+49mBODU=
+github.com/jenkins-x/jx/v2 v2.1.142 h1:I0fmRrvhVWSFZ9sAZocmias0ZL3Ezbh/dZ443uxiLXk=
+github.com/jenkins-x/jx/v2 v2.1.142/go.mod h1:O8WXBjll+5UMxivEykrq6xlRmENDzY9QUD60bcnw6OI=
 github.com/jenkins-x/lighthouse v0.0.777/go.mod h1:GXmCeG5s4xS0FQpkyC8DpW8R16Fm+hsxHCnF79MkgAw=
+github.com/jenkins-x/lighthouse v0.0.783/go.mod h1:YQrNm8iYd2CbYKEw/uuN2O4xHp19xMSRnl4rRVOf4vc=
 github.com/jenkins-x/lighthouse v0.0.785 h1:RVH7cR+4JqHjUvvU5cnZG/l3u9YAnvUX1i6hn+EjYzg=
 github.com/jenkins-x/lighthouse v0.0.785/go.mod h1:CwKGIN9JFhZ8YcPjBeshYnoHs/Bg7XBA3KF9lHHjIDY=
 github.com/jenkins-x/logrus-stackdriver-formatter v0.2.3 h1:NuRWKUPCEX1wKlXA8ZYSG28qGKd41R7BK11YDQkPwqo=
