@@ -24,10 +24,6 @@ Verifies the ingress configuration defaulting the ingress domain if necessary
     the directory to look for the values.yaml file
 
 .PP
-\fB\-\-external\-ip\fP=""
-    The external IP used to access ingress endpoints from outside the Kubernetes cluster. For bare metal on premise clusters this is often the IP of the Kubernetes master. For cloud installations this is often the external IP of the ingress LoadBalancer.
-
-.PP
 \fB\-h\fP, \fB\-\-help\fP[=false]
     help for ingress
 
@@ -39,33 +35,11 @@ Verifies the ingress configuration defaulting the ingress domain if necessary
 \fB\-\-ingress\-service\fP="nginx\-ingress\-controller"
     The name of the Ingress controller Service
 
-.PP
-\fB\-\-lazy\-create\fP=""
-    Specify true/false as to whether to lazily create missing resources. If not specified it is enabled if Terraform is not specified in the jx\-requirements.yml file
-
-.PP
-\fB\-n\fP, \fB\-\-namespace\fP=""
-    the namespace to install into. Defaults to $DEPLOY\_NAMESPACE if not
-
-.PP
-\fB\-\-provider\fP=""
-    Cloud service providing the Kubernetes cluster.  Supported providers: aks, alibaba, aws, eks, gke, icp, iks, jx\-infra, kubernetes, oke, openshift, pks
-
-
-.SH OPTIONS INHERITED FROM PARENT COMMANDS
-.PP
-\fB\-b\fP, \fB\-\-batch\-mode\fP[=false]
-    Runs in batch mode without prompting for user input
-
-.PP
-\fB\-\-verbose\fP[=false]
-    Enables verbose output. The environment variable JX\_LOG\_LEVEL has precedence over this flag and allows setting the logging level to any value of: panic, fatal, error, warn, info, debug, trace
-
 
 .SH EXAMPLE
 .PP
 # populate the ingress domain if not using a configured 'ingress.domain' setting
-  jx step verify ingress
+  jx step verify ingress%!(EXTRA string=jx\-verify)
 
 
 .SH SEE ALSO
