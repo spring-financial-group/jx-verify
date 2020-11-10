@@ -5,15 +5,14 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff"
-	"github.com/jenkins-x/jx-logging/pkg/log"
+	"github.com/jenkins-x/jx-logging/v3/pkg/log"
 	"github.com/jenkins-x/jx-verify/pkg/rootcmd"
-	"github.com/jenkins-x/jx/v2/pkg/util"
 
 	"github.com/pkg/errors"
 
 	"github.com/genkiroid/cert"
-	"github.com/jenkins-x/jx-helpers/pkg/cobras/helper"
-	"github.com/jenkins-x/jx-helpers/pkg/cobras/templates"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/cobras/helper"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/cobras/templates"
 	"github.com/spf13/cobra"
 )
 
@@ -67,7 +66,7 @@ func NewCmdVerifyTLS() (*cobra.Command, *Options) {
 // Run implements the command
 func (o *Options) Run(args []string) error {
 	if len(args) != 1 {
-		return util.MissingArgument("domain")
+		return errors.Errorf("domain command argument not specified")
 	}
 
 	err := retry(o.timeout, func() error {

@@ -1,18 +1,12 @@
 package cmd
 
 import (
-	"os"
-
-	"github.com/jenkins-x/jx-helpers/pkg/cobras"
-	"github.com/jenkins-x/jx-logging/pkg/log"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/cobras"
+	"github.com/jenkins-x/jx-logging/v3/pkg/log"
 	"github.com/jenkins-x/jx-verify/pkg/cmd/ingress"
 	"github.com/jenkins-x/jx-verify/pkg/cmd/tls"
 	"github.com/jenkins-x/jx-verify/pkg/cmd/version"
 	"github.com/jenkins-x/jx-verify/pkg/rootcmd"
-	"github.com/jenkins-x/jx/v2/pkg/cmd/clients"
-	"github.com/jenkins-x/jx/v2/pkg/cmd/opts"
-	"github.com/jenkins-x/jx/v2/pkg/cmd/step/verify"
-	"github.com/jenkins-x/jx/v2/pkg/cmd/update"
 	"github.com/spf13/cobra"
 )
 
@@ -28,26 +22,9 @@ func Main() *cobra.Command {
 			}
 		},
 	}
-	f := clients.NewFactory()
-	commonOpts := opts.NewCommonOptionsWithTerm(f, os.Stdin, os.Stdout, os.Stderr)
-	commonOpts.AddBaseFlags(cmd)
-
-	cmd.AddCommand(verify.NewCmdStepVerifyBehavior(commonOpts))
-	cmd.AddCommand(verify.NewCmdStepVerifyDependencies(commonOpts))
-	cmd.AddCommand(verify.NewCmdStepVerifyDNS(commonOpts))
-	cmd.AddCommand(verify.NewCmdStepVerifyEnvironments(commonOpts))
-	cmd.AddCommand(verify.NewCmdStepVerifyGit(commonOpts))
-	cmd.AddCommand(ingress.NewCmdVerifyIngress(commonOpts))
-	cmd.AddCommand(verify.NewCmdStepVerifyInstall(commonOpts))
-	cmd.AddCommand(verify.NewCmdStepVerifyPackages(commonOpts))
-	cmd.AddCommand(verify.NewCmdStepVerifyPod(commonOpts))
-	cmd.AddCommand(verify.NewCmdStepVerifyPreInstall(commonOpts))
-	cmd.AddCommand(verify.NewCmdStepVerifyRequirements(commonOpts))
-	cmd.AddCommand(verify.NewCmdStepVerifyURL(commonOpts))
-	cmd.AddCommand(verify.NewCmdStepVerifyValues(commonOpts))
-	cmd.AddCommand(update.NewCmdUpdateWebhooks(commonOpts))
 	cmd.AddCommand(cobras.SplitCommand(tls.NewCmdVerifyTLS()))
 	cmd.AddCommand(cobras.SplitCommand(version.NewCmdVersion()))
+	cmd.AddCommand(cobras.SplitCommand(ingress.CmdVerifyIngress()))
 
 	return cmd
 }
