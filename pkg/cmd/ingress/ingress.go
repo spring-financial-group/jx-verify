@@ -36,7 +36,7 @@ var (
 
 	cmdExample = templates.Examples(`
 		# populate the ingress domain if not using a configured 'ingress.domain' setting
-		jx step verify ingress
+		jx verify ingress
 
 			`)
 )
@@ -96,7 +96,7 @@ func (o *Options) Run() error {
 		}
 	}
 
-	err = o.verifyDockerRegistry()
+	err = verifyDockerRegistry(o.KubeClient, requirements)
 	if err != nil {
 		log.Logger().Errorf("failed %s", err.Error())
 	}
@@ -189,7 +189,7 @@ func waitForIngressControllerHost(kubeClient kubernetes.Interface, ns, serviceNa
 	return true, nil
 }
 
-// RetryUntilTrueOrTimeout waits until complete is true, an error occurs or the timeout
+// retryUntilTrueOrTimeout waits until complete is true, an error occurs or the timeout
 func retryUntilTrueOrTimeout(timeout time.Duration, sleep time.Duration, call func() (bool, error)) (err error) {
 	timeoutTime := time.Now().Add(timeout)
 
@@ -206,7 +206,7 @@ func retryUntilTrueOrTimeout(timeout time.Duration, sleep time.Duration, call fu
 	}
 }
 
-// GetDomain returns the domain name, trying to infer it either from various Kubernetes resources or cloud provider.
+// getDomain returns the domain name, trying to infer it either from various Kubernetes resources or cloud provider.
 func getDomain(client kubernetes.Interface, domain string, ingressNamespace string, ingressService string) (string, error) {
 	address := ""
 	log.Logger().Infof("Waiting to find the external host name of the ingress controller Service in namespace %s with name %s",
@@ -275,7 +275,7 @@ func getDomain(client kubernetes.Interface, domain string, ingressNamespace stri
 	return domain, nil
 }
 
-// RetryQuiet executes a given function call with retry when an error occurs without printing any logs
+// retryQuiet executes a given function call with retry when an error occurs without printing any logs
 func retryQuiet(attempts int, sleep time.Duration, call func() error) (err error) {
 	lastMessage := ""
 	dot := false
@@ -322,14 +322,10 @@ func (o *Options) Validate() error {
 	return nil
 }
 
-func (o *Options) verifyDockerRegistry() error {
+// verifyDockerRegistry
+func verifyDockerRegistry(client kubernetes.Interface, requirements *config.RequirementsConfig) error {
 
-	log.Logger().Infof("now verifying docker registry ingress setup in dir %s", o.Dir)
-
-	requirements, requirementsFileName, err := config.LoadRequirementsConfig(o.Dir, false)
-	if err != nil {
-		return errors.Wrapf(err, "failed to load Jenkins X requirements")
-	}
+	log.Logger().Infof("now verifying docker registry ingress setup")
 
 	if requirements.Cluster.Registry != "" {
 		// if the registry is an IP address then lets still default as the service could have been recreated
@@ -344,8 +340,6 @@ func (o *Options) verifyDockerRegistry() error {
 			requirements.Cluster.Namespace = "jx"
 		}
 
-		client := o.KubeClient
-
 		svc, err := client.CoreV1().Services(requirements.Cluster.Namespace).Get(context.TODO(), "docker-registry", metav1.GetOptions{})
 		if err != nil && !apierrors.IsNotFound(err) {
 			return errors.Wrapf(err, "failed to list services in namespace %s so we can default the registry host", requirements.Cluster.Namespace)
@@ -358,11 +352,6 @@ func (o *Options) verifyDockerRegistry() error {
 			return nil
 		}
 
-		err = requirements.SaveConfig(requirementsFileName)
-		if err != nil {
-			return errors.Wrapf(err, "failed to save changes to file: %s", requirementsFileName)
-		}
-		log.Logger().Infof("defaulting the docker registry and modified %s\n", termcolor.ColorInfo(requirementsFileName))
 		return nil
 
 	default:
