@@ -48,7 +48,7 @@ type Options struct {
 	IngressService   string
 }
 
-func CmdVerifyIngress() (*cobra.Command, *Options) {
+func NewCmdVerifyIngress() (*cobra.Command, *Options) {
 	o := &Options{}
 
 	cmd := &cobra.Command{
@@ -69,13 +69,17 @@ func CmdVerifyIngress() (*cobra.Command, *Options) {
 }
 
 func (o *Options) Run() error {
-
 	var err error
 	if o.Dir == "" {
 		o.Dir, err = os.Getwd()
 		if err != nil {
 			return err
 		}
+	}
+
+	o.KubeClient, err = kube.LazyCreateKubeClient(o.KubeClient)
+	if err != nil {
+		return errors.Wrapf(err, "failed to create kubernetes client")
 	}
 
 	requirements, requirementsFileName, err := config.LoadRequirementsConfig(o.Dir, config.DefaultFailOnValidationError)
