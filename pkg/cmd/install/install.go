@@ -63,7 +63,7 @@ func NewCmdVerifyInstall() (*cobra.Command, *Options) {
 		},
 	}
 	cmd.Flags().StringVarP(&o.Namespace, "namespace", "n", "", "if not specified uses the default namespace")
-	cmd.Flags().DurationVarP(&o.WaitDuration, "wait", "w", time.Minute, "The default wait time to wait for the pods to be ready")
+	cmd.Flags().DurationVarP(&o.WaitDuration, "pod-wait-time", "w", 2*time.Minute, "The default wait time to wait for the pods to be ready")
 	cmd.Flags().DurationVarP(&o.PollPeriod, "poll", "p", 10*time.Second, "The period between polls")
 	cmd.Flags().BoolVarP(&o.IncludeBuildPods, "include-build", "", false, "Include build pods")
 
