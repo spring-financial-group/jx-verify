@@ -264,6 +264,9 @@ func getDomain(client kubernetes.Interface, domain string, ingressNamespace stri
 				log.Logger().Infof("%s resolved to IP %s", termcolor.ColorInfo(address), termcolor.ColorInfo(addressIP))
 				address = addressIP
 			}
+		} else {
+			// its an IP address so lets append a DNS resolver so we can use it with DNS sub domains for ingress
+			defaultDomain = fmt.Sprintf("%s.nip.io", address)
 		}
 	}
 
