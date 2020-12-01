@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/jenkins-x/jx-api/v3/pkg/config"
+	jxcore "github.com/jenkins-x/jx-api/v4/pkg/apis/core/v4beta1"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/cobras/helper"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/cobras/templates"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/kube"
@@ -82,11 +82,11 @@ func (o *Options) Run() error {
 		return errors.Wrapf(err, "failed to create kubernetes client")
 	}
 
-	requirements, requirementsFileName, err := config.LoadRequirementsConfig(o.Dir, config.DefaultFailOnValidationError)
+	requirementsResource, requirementsFileName, err := jxcore.LoadRequirementsConfig(o.Dir, jxcore.DefaultFailOnValidationError)
 	if err != nil {
 		return errors.Wrapf(err, "failed to load Jenkins X requirements")
 	}
-
+	requirements := &requirementsResource.Spec
 	err = o.discoverIngressDomain(requirements, requirementsFileName)
 
 	// TLS uses cert-manager to ask LetsEncrypt for a signed certificate
@@ -106,10 +106,10 @@ func (o *Options) Run() error {
 	}
 	helper.CheckErr(err)
 
-	return requirements.SaveConfig(requirementsFileName)
+	return requirementsResource.SaveConfig(requirementsFileName)
 }
 
-func (o *Options) discoverIngressDomain(requirements *config.RequirementsConfig, requirementsFileName string) error {
+func (o *Options) discoverIngressDomain(requirements *jxcore.RequirementsConfig, requirementsFileName string) error {
 	if requirements.Ingress.IgnoreLoadBalancer {
 		log.Logger().Infof("ignoring the load balancer to detect a public ingress domain")
 		return nil
@@ -330,7 +330,7 @@ func (o *Options) Validate() error {
 }
 
 // verifyDockerRegistry
-func verifyDockerRegistry(client kubernetes.Interface, requirements *config.RequirementsConfig) error {
+func verifyDockerRegistry(client kubernetes.Interface, requirements *jxcore.RequirementsConfig) error {
 
 	log.Logger().Infof("now verifying docker registry ingress setup")
 
@@ -343,19 +343,17 @@ func verifyDockerRegistry(client kubernetes.Interface, requirements *config.Requ
 	}
 	switch requirements.Cluster.Provider {
 	case "kubernetes", "kind", "docker", "minikube", "minishift":
-		if requirements.Cluster.Namespace == "" {
-			requirements.Cluster.Namespace = "jx"
-		}
+		ns := jxcore.DefaultNamespace
 
-		svc, err := client.CoreV1().Services(requirements.Cluster.Namespace).Get(context.TODO(), "docker-registry", metav1.GetOptions{})
+		svc, err := client.CoreV1().Services(ns).Get(context.TODO(), "docker-registry", metav1.GetOptions{})
 		if err != nil && !apierrors.IsNotFound(err) {
-			return errors.Wrapf(err, "failed to list services in namespace %s so we can default the registry host", requirements.Cluster.Namespace)
+			return errors.Wrapf(err, "failed to list services in namespace %s so we can default the registry host", ns)
 		}
 
 		if svc != nil && svc.Spec.ClusterIP != "" {
 			requirements.Cluster.Registry = svc.Spec.ClusterIP
 		} else {
-			log.Logger().Warnf("could not find the clusterIP for the service docker-registry in the namespace %s so that we could default the container registry host", requirements.Cluster.Namespace)
+			log.Logger().Warnf("could not find the clusterIP for the service docker-registry in the namespace %s so that we could default the container registry host", ns)
 			return nil
 		}
 
