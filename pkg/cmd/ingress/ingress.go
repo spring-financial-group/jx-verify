@@ -26,7 +26,7 @@ const (
 	// DefaultIngressNamespace default namespace fro ingress controller
 	DefaultIngressNamespace = "nginx"
 	// DefaultIngressServiceName default name for ingress controller service and deployment
-	DefaultIngressServiceName = "nginx-ingress-controller"
+	DefaultIngressServiceName = "ingress-nginx-controller"
 )
 
 var (
