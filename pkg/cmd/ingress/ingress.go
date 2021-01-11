@@ -82,7 +82,7 @@ func (o *Options) Run() error {
 		return errors.Wrapf(err, "failed to create kubernetes client")
 	}
 
-	requirementsResource, requirementsFileName, err := jxcore.LoadRequirementsConfig(o.Dir, jxcore.DefaultFailOnValidationError)
+	requirementsResource, requirementsFileName, err := jxcore.LoadRequirementsConfig(o.Dir, false)
 	if err != nil {
 		return errors.Wrapf(err, "failed to load Jenkins X requirements")
 	}
