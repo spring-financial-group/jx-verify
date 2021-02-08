@@ -3,6 +3,7 @@ module github.com/jenkins-x/jx-verify
 go 1.15
 
 require (
+	github.com/Azure/go-autorest/autorest/adal v0.9.12 // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cpuguy83/go-md2man v1.0.10
 	github.com/genkiroid/cert v0.0.0-20191007122723-897560fbbe50

@@ -1,0 +1,5 @@
+jx-verify-pods has been installed successfully.
+
+To verify the Job is setup correctly, run:
+
+    kubectl --namespace={{ .Release.Namespace }} get job -l "app={{ template "verifyJob.name" . }}"
