@@ -1,4 +1,4 @@
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ template "verifyJob.name" . }}
@@ -15,17 +15,15 @@ spec:
         release: {{ .Release.Name }}
     spec:
       containers:
-        - args:
-            - verify
-            - pods
-        - command:
-            - jx
-          env:
-            - name: XDG_CONFIG_HOME
-              value: /home
-          image: {{ tpl .Values.image.repository . }}:{{ tpl .Values.image.tag . }}
-          imagePullPolicy: {{ tpl .Values.image.pullPolicy . }}
-          name: job
+      - command:
+        - jx-verify
+        - pods
+        env:
+        - name: XDG_CONFIG_HOME
+          value: /home
+        image: {{ tpl .Values.image.repository . }}:{{ tpl .Values.image.tag . }}
+        imagePullPolicy: {{ tpl .Values.image.pullPolicy . }}
+        name: job
       dnsPolicy: ClusterFirst
       restartPolicy: Never
       schedulerName: default-scheduler

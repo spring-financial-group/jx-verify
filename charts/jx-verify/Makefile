@@ -1,7 +1,7 @@
 CHART_REPO := gs://jenkinsxio/charts
 CURRENT=$(pwd)
 GO_MOD := GO111MODULE=on go
-NAME := jx-preview
+NAME := jx-verify
 OS := $(shell uname)
 
 HELMDOCS := $(GOPATH)/bin/helm-docs
@@ -17,7 +17,7 @@ build: clean
 	helm lint
 
 install: clean build
-	helm install . --name ${NAME}
+	helm install ${NAME} .
 
 upgrade: clean build
 	helm upgrade ${NAME} .
