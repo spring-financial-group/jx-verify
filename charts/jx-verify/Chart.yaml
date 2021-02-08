@@ -1,0 +1,8 @@
+apiVersion: v1
+description: |
+  This chart deletes any pods which can't load their images to work around timing issues with Workload Identity and preview environments
+icon: https://raw.githubusercontent.com/jenkins-x/jenkins-x-website/master/images/logo/jenkinsx-icon-color.svg
+name: jx-verify
+version: 0.1.0-SNAPSHOT
+home: https://github.com/jenkins-x/jx-verify
+

@@ -1,0 +1,33 @@
+apiVersion: batch/v1beta1
+kind: Job
+metadata:
+  name: {{ template "verifyJob.name" . }}
+  labels:
+    app: {{ template "verifyJob.name" . }}
+spec:
+  backoffLimit: 1
+  completions: 1
+  parallelism: 1
+  template:
+    metadata:
+      labels:
+        app: {{ template "verifyJob.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - args:
+            - verify
+            - pods
+        - command:
+            - jx
+          env:
+            - name: XDG_CONFIG_HOME
+              value: /home
+          image: {{ tpl .Values.image.repository . }}:{{ tpl .Values.image.tag . }}
+          imagePullPolicy: {{ tpl .Values.image.pullPolicy . }}
+          name: job
+      dnsPolicy: ClusterFirst
+      restartPolicy: Never
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
+      serviceAccountName: {{ template "verifyJob.name" . }}
