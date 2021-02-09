@@ -32,14 +32,14 @@ Verifies the ingress configuration defaulting the ingress domain if necessary
     The namespace for the Ingress controller
 
 .PP
-\fB\-\-ingress\-service\fP="nginx\-ingress\-controller"
+\fB\-\-ingress\-service\fP="ingress\-nginx\-controller"
     The name of the Ingress controller Service
 
 
 .SH EXAMPLE
 .PP
 # populate the ingress domain if not using a configured 'ingress.domain' setting
-  jx step verify ingress%!(EXTRA string=jx\-verify)
+  jx verify ingress%!(EXTRA string=jx\-verify)
 
 
 .SH SEE ALSO
