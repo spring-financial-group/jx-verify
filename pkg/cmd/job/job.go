@@ -3,6 +3,7 @@ package job
 import (
 	"context"
 	"fmt"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 	"io"
 	"os"
 	"sort"
@@ -18,7 +19,6 @@ import (
 	"github.com/jenkins-x/jx-helpers/v3/pkg/kube/podlogs"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/kube/pods"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/options"
-	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/termcolor"
 	"github.com/jenkins-x/jx-kube-client/v3/pkg/kubeclient"
 	logger "github.com/jenkins-x/jx-logging/v3/pkg/log"
@@ -80,8 +80,8 @@ func NewCmdVerifyJob() (*cobra.Command, *Options) {
 	}
 	command.Flags().StringVarP(&options.Namespace, "namespace", "n", "", "the namespace where the jobs run. If not specified it will look in: jx-git-operator and jx")
 	command.Flags().StringVarP(&options.JobSelector, "selector", "l", "", "the selector of the job pods")
-	command.Flags().StringVarP(&options.ContainerName, "container", "c", "job", "the name of the container in the job to log")
-	command.Flags().DurationVarP(&options.Duration, "duration", "d", time.Minute*30, "how long to wait for a Job to be active and a Pod to be ready")
+	command.Flags().StringVarP(&options.ContainerName, "container", "c", "", "the name of the container in the job to log")
+	command.Flags().DurationVarP(&options.Duration, "duration", "d", time.Minute*60, "how long to wait for a Job to be active and a Pod to be ready")
 	command.Flags().DurationVarP(&options.PollPeriod, "poll", "", time.Second*1, "duration between polls for an active Job or Pod")
 
 	options.BaseOptions.AddBaseFlags(command)
@@ -107,7 +107,9 @@ func (o *Options) Run() error {
 	return o.pickJobToLog(client, ns, selector, jobs)
 }
 
-func (o *Options) viewActiveJobLog(client kubernetes.Interface, ns string, selector string, containerName string, job *batchv1.Job) error {
+func (o *Options) viewActiveJobLog(client kubernetes.Interface, ns string, selector string, job *batchv1.Job) error {
+	o.timeEnd = time.Now().Add(o.Duration)
+
 	var foundPods []string
 	for {
 		complete, pod, err := o.waitForJobCompleteOrPodRunning(client, ns, selector, job.Name)
@@ -126,6 +128,10 @@ func (o *Options) viewActiveJobLog(client kubernetes.Interface, ns string, selec
 		}
 
 		// lets verify the container name
+		containerName := o.ContainerName
+		if containerName == "" {
+			containerName = pod.Spec.Containers[0].Name
+		}
 		err = verifyContainerName(pod, containerName)
 		if err != nil {
 			return err
@@ -134,7 +140,7 @@ func (o *Options) viewActiveJobLog(client kubernetes.Interface, ns string, selec
 		if stringhelpers.StringArrayIndex(foundPods, podName) < 0 {
 			foundPods = append(foundPods, podName)
 		}
-		logger.Logger().Infof("\ntailing job pod %s\n\n", info(podName))
+		logger.Logger().Infof("\ntailing boot Job pod %s\n\n", info(podName))
 
 		err = podlogs.TailLogs(ns, podName, containerName, o.ErrOut, o.Out)
 		if err != nil {
@@ -146,76 +152,14 @@ func (o *Options) viewActiveJobLog(client kubernetes.Interface, ns string, selec
 		}
 		if pods.IsPodCompleted(pod) {
 			if pods.IsPodSucceeded(pod) {
-				logger.Logger().Infof("job pod %s has %s", info(podName), info("Succeeded"))
+				logger.Logger().Infof("boot Job pod %s has %s", info(podName), info("Succeeded"))
 			} else {
-				logger.Logger().Infof("job pod %s has %s", info(podName), termcolor.ColorError(string(pod.Status.Phase)))
+				logger.Logger().Infof("boot Job pod %s has %s", info(podName), termcolor.ColorError(string(pod.Status.Phase)))
 			}
 		} else if pod.DeletionTimestamp != nil {
-			logger.Logger().Infof("job pod %s is %s", info(podName), termcolor.ColorWarning("Terminating"))
+			logger.Logger().Infof("boot Job pod %s is %s", info(podName), termcolor.ColorWarning("Terminating"))
 		}
 	}
-}
-
-func (o *Options) viewJobLog(client kubernetes.Interface, ns string, selector string, containerName string, job *batchv1.Job) error {
-	opts := metav1.ListOptions{
-		LabelSelector: "job-name=" + job.Name,
-	}
-	podList, err := client.CoreV1().Pods(ns).List(context.TODO(), opts)
-	if err != nil && apierrors.IsNotFound(err) {
-		err = nil
-	}
-	if err != nil {
-		return errors.Wrapf(err, "failed to list pods in namespace %s with selector %s", ns, selector)
-	}
-
-	var answer error
-	for i := range podList.Items {
-		pod := &podList.Items[i]
-
-		// lets verify the container name
-		err = verifyContainerName(pod, containerName)
-		if err != nil {
-			return err
-		}
-
-		// wait for a pod to be running, ready or completed
-		condition := func(pod *v1.Pod) bool {
-			return pods.IsPodReady(pod) || pods.IsPodCompleted(pod) || pod.Status.Phase == corev1.PodRunning
-		}
-		err = pods.WaitforPodNameCondition(client, ns, pod.Name, o.Duration, condition)
-		if err != nil {
-			return errors.Wrapf(err, "failed to wait for pod %s to be running", pod.Name)
-		}
-		podName := pod.Name
-		logger.Logger().Infof("\ntailing job pod %s\n\n", info(podName))
-
-		err = podlogs.TailLogs(ns, podName, containerName, o.ErrOut, o.Out)
-		if err != nil {
-			logger.Logger().Warnf("failed to tail log: %s", err.Error())
-		}
-		pod, err = client.CoreV1().Pods(ns).Get(context.TODO(), podName, metav1.GetOptions{})
-		if err != nil {
-			return errors.Wrapf(err, "failed to get pod %s in namespace %s", podName, ns)
-		}
-		if pods.IsPodCompleted(pod) {
-			if pods.IsPodSucceeded(pod) {
-				logger.Logger().Infof("job pod %s has %s", info(podName), info("Succeeded"))
-			} else {
-				logger.Logger().Infof("job pod %s has %s", info(podName), termcolor.ColorError(string(pod.Status.Phase)))
-				if answer == nil {
-					answer = errors.Errorf("job pod %s has %s", podName, string(pod.Status.Phase))
-				}
-			}
-		} else if pod.DeletionTimestamp != nil {
-			logger.Logger().Infof("job pod %s is %s", info(podName), termcolor.ColorWarning("Terminating"))
-		}
-	}
-	if answer == nil {
-		if jobs.IsJobFinished(job) && !jobs.IsJobSucceeded(job) {
-			return errors.Errorf("job %s has failed", job.Name)
-		}
-	}
-	return answer
 }
 
 // Validate verifies the settings are correct and we can lazy create any required resources
@@ -369,7 +313,7 @@ func (o *Options) pickJobToLog(client kubernetes.Interface, ns string, selector 
 	if job == nil {
 		return errors.Errorf("cannot find Job %s", name)
 	}
-	return o.viewJobLog(client, ns, selector, o.ContainerName, job)
+	return o.viewActiveJobLog(client, ns, selector, job)
 }
 
 func toJobName(j *batchv1.Job, number int) string {
