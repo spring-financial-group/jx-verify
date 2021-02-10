@@ -140,7 +140,7 @@ func (o *Options) viewActiveJobLog(client kubernetes.Interface, ns string, selec
 		if stringhelpers.StringArrayIndex(foundPods, podName) < 0 {
 			foundPods = append(foundPods, podName)
 		}
-		logger.Logger().Infof("\ntailing boot Job pod %s\n\n", info(podName))
+		logger.Logger().Infof("\ntailing pod %s\n\n", info(podName))
 
 		err = podlogs.TailLogs(ns, podName, containerName, o.ErrOut, o.Out)
 		if err != nil {
@@ -152,12 +152,12 @@ func (o *Options) viewActiveJobLog(client kubernetes.Interface, ns string, selec
 		}
 		if pods.IsPodCompleted(pod) {
 			if pods.IsPodSucceeded(pod) {
-				logger.Logger().Infof("boot Job pod %s has %s", info(podName), info("Succeeded"))
+				logger.Logger().Infof("pod %s has %s", info(podName), info("Succeeded"))
 			} else {
-				logger.Logger().Infof("boot Job pod %s has %s", info(podName), termcolor.ColorError(string(pod.Status.Phase)))
+				logger.Logger().Infof("pod %s has %s", info(podName), termcolor.ColorError(string(pod.Status.Phase)))
 			}
 		} else if pod.DeletionTimestamp != nil {
-			logger.Logger().Infof("boot Job pod %s is %s", info(podName), termcolor.ColorWarning("Terminating"))
+			logger.Logger().Infof("pod %s is %s", info(podName), termcolor.ColorWarning("Terminating"))
 		}
 	}
 }
