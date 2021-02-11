@@ -118,10 +118,9 @@ func (o *Options) discoverIngressDomain(requirements *jxcore.RequirementsConfig,
 	var domain string
 
 	// TODO - Do we want stronger assertions than we just specified the domain in requirements file?
-	if requirements.Ingress.Domain != "" {
+	if requirements.Ingress.Domain != "" && requirements.Ingress.Domain != "change.me" {
 		return nil
 	}
-
 	domain, err := getDomain(client, "",
 		o.IngressNamespace,
 		o.IngressService)
