@@ -124,8 +124,6 @@ func (o *Options) Run() error {
 }
 
 func (o *Options) viewActiveJobLog(client kubernetes.Interface, ns string, selector string, jobName string) error {
-	o.timeEnd = time.Now().Add(o.Duration)
-
 	var foundPods []string
 	for {
 		complete, pod, err := o.waitForJobCompleteOrPodRunning(client, ns, selector, jobName)
@@ -212,6 +210,7 @@ func (o *Options) Validate() error {
 	if o.Input == nil {
 		o.Input = inputfactory.NewInput(&o.BaseOptions)
 	}
+	o.timeEnd = time.Now().Add(o.Duration)
 	return nil
 }
 
