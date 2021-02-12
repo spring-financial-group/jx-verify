@@ -244,6 +244,9 @@ func (o *Options) waitForJobToExist(client kubernetes.Interface, ns, jobName str
 			logger.Logger().Infof("found Job %s", info(jobName))
 			return job, nil
 		}
+		if err != nil && !apierrors.IsNotFound(err) {
+			return nil, errors.Wrapf(err, "failed to look for job %s in namespace %s", jobName, ns)
+		}
 
 		if !logged {
 			logged = true
