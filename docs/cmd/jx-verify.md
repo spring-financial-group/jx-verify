@@ -20,6 +20,7 @@ commands for verifying Jenkins X environments
 
 ### SEE ALSO
 
+* [jx-verify context](jx-verify_context.md)	 - Verifies the current kubernetes context matches a given name
 * [jx-verify ingress](jx-verify_ingress.md)	 - Verifies the ingress configuration defaulting the ingress domain if necessary
 * [jx-verify install](jx-verify_install.md)	 - Verifies the installation is ready
 * [jx-verify job](jx-verify_job.md)	 - Verifies that the job(s) with the given label succeeds and tails the log as it executes
