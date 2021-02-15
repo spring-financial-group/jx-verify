@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/jenkins-x/jx-helpers/v3/pkg/cobras"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
+	"github.com/jenkins-x/jx-verify/pkg/cmd/ctx"
 	"github.com/jenkins-x/jx-verify/pkg/cmd/ingress"
 	"github.com/jenkins-x/jx-verify/pkg/cmd/install"
 	"github.com/jenkins-x/jx-verify/pkg/cmd/job"
@@ -25,6 +26,7 @@ func Main() *cobra.Command {
 			}
 		},
 	}
+	cmd.AddCommand(cobras.SplitCommand(ctx.NewCmdVerifyContext()))
 	cmd.AddCommand(cobras.SplitCommand(ingress.NewCmdVerifyIngress()))
 	cmd.AddCommand(cobras.SplitCommand(install.NewCmdVerifyInstall()))
 	cmd.AddCommand(cobras.SplitCommand(job.NewCmdVerifyJob()))
