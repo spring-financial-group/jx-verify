@@ -24,20 +24,32 @@ Verifies that the job(s) with the given label succeeds and tails the log as it e
     Runs in batch mode without prompting for user input
 
 .PP
-\fB\-c\fP, \fB\-\-container\fP="job"
+\fB\-c\fP, \fB\-\-container\fP=""
     the name of the container in the job to log
 
 .PP
-\fB\-d\fP, \fB\-\-duration\fP=30m0s
+\fB\-d\fP, \fB\-\-duration\fP=1h0m0s
     how long to wait for a Job to be active and a Pod to be ready
+
+.PP
+\fB\-f\fP, \fB\-\-field\-selector\fP=""
+    the field selector to use to query jobs
 
 .PP
 \fB\-h\fP, \fB\-\-help\fP[=false]
     help for job
 
 .PP
+\fB\-\-log\-fail\fP[=false]
+    rather than failing the command lets just log that the job failed. e.g. this lets us run tests inside a Terraform Pod without the terraform operator thinking the terraform failed.
+
+.PP
 \fB\-\-log\-level\fP=""
     Sets the logging level. If not specified defaults to $JX\_LOG\_LEVEL
+
+.PP
+\fB\-\-name\fP=""
+    the name of the job to use
 
 .PP
 \fB\-n\fP, \fB\-\-namespace\fP=""
@@ -55,11 +67,19 @@ Verifies that the job(s) with the given label succeeds and tails the log as it e
 \fB\-\-verbose\fP[=false]
     Enables verbose output. The environment variable JX\_LOG\_LEVEL has precedence over this flag and allows setting the logging level to any value of: panic, fatal, error, warn, info, debug, trace
 
+.PP
+\fB\-\-verify\-result\fP[=false]
+    if the pod succeeds lets look for the last line starting with POD RESULT:  to determine the test result
+
 
 .SH EXAMPLE
 .PP
 # verify the BDD job succeeds
   jx verify job \-l app=jx\-bdd
+
+.PP
+# verify the BDD job succeeds using name
+  jx verify job \-\-name jx\-bdd
 
 
 .SH SEE ALSO
