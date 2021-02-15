@@ -2,6 +2,8 @@
 
 Verifies that all pods start OK in the current namespace; killing any Pods which have ErrImagePull
 
+***Aliases**: pod*
+
 ### Usage
 
 ```
@@ -20,7 +22,7 @@ Verifies that all pods start OK in the current namespace; killing any Pods which
 ### Options
 
 ```
-  -c, --count int          The minimum Ready pod count required matching the selector before terminating (default 1)
+  -c, --count int          The minimum Ready pod count required matching the selector before terminating (default 2)
   -h, --help               help for pods
   -n, --namespace string   The namespace to look for events
   -s, --selector string    The selector to query for all pods being running
