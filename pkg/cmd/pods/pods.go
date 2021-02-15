@@ -58,6 +58,7 @@ func NewCmdVerifyPods() (*cobra.Command, *Options) {
 		Use:     "pods",
 		Short:   "Verifies that all pods start OK in the current namespace; killing any Pods which have ErrImagePull",
 		Long:    cmdLong,
+		Aliases: []string{"pod"},
 		Example: fmt.Sprintf(cmdExample, rootcmd.BinaryName),
 		Run: func(cmd *cobra.Command, args []string) {
 			err := o.Run()
@@ -66,7 +67,7 @@ func NewCmdVerifyPods() (*cobra.Command, *Options) {
 	}
 	cmd.Flags().StringVarP(&o.Namespace, "namespace", "n", "", "The namespace to look for events")
 	cmd.Flags().StringVarP(&o.Selector, "selector", "s", "", "The selector to query for all pods being running")
-	cmd.Flags().IntVarP(&o.PodCount, "count", "c", 1, "The minimum Ready pod count required matching the selector before terminating")
+	cmd.Flags().IntVarP(&o.PodCount, "count", "c", 2, "The minimum Ready pod count required matching the selector before terminating")
 
 	return cmd, o
 }
