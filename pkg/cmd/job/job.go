@@ -44,6 +44,8 @@ type Options struct {
 	Duration      time.Duration
 	PollPeriod    time.Duration
 	NoTail        bool
+	LogFail       bool
+	VerifyResult  bool
 	ErrOut        io.Writer
 	Out           io.Writer
 	KubeClient    kubernetes.Interface
@@ -51,6 +53,17 @@ type Options struct {
 	timeEnd       time.Time
 	podStatusMap  map[string]string
 }
+
+const (
+	// PodResultPrefix the result of the pod status
+	PodResultPrefix = "POD RESULT: "
+
+	// PodResultOK if the pod completed successfully
+	PodResultOK = "OK"
+
+	// PodResultFailed if the pod failed
+	PodResultFailed = "FAILED: "
+)
 
 var (
 	info = termcolor.ColorInfo
@@ -90,6 +103,8 @@ func NewCmdVerifyJob() (*cobra.Command, *Options) {
 	command.Flags().StringVarP(&options.ContainerName, "container", "c", "", "the name of the container in the job to log")
 	command.Flags().DurationVarP(&options.Duration, "duration", "d", time.Minute*60, "how long to wait for a Job to be active and a Pod to be ready")
 	command.Flags().DurationVarP(&options.PollPeriod, "poll", "", time.Second*1, "duration between polls for an active Job or Pod")
+	command.Flags().BoolVarP(&options.LogFail, "log-fail", "", false, "rather than failing the command lets just log that the job failed. e.g. this lets us run tests inside a Terraform Pod without the terraform operator thinking the terraform failed.")
+	command.Flags().BoolVarP(&options.VerifyResult, "verify-result", "", false, "if the pod succeeds lets look for the last line starting with "+PodResultPrefix+" to determine the test result")
 
 	options.BaseOptions.AddBaseFlags(command)
 
@@ -112,7 +127,8 @@ func (o *Options) Run() error {
 		if err != nil {
 			return errors.Wrapf(err, "failed to wait for job %s", o.Name)
 		}
-		return o.viewActiveJobLog(client, ns, selector, o.Name)
+		err = o.viewActiveJobLog(client, ns, selector, o.Name)
+		return o.handleErrorReporting(err)
 	}
 
 	jobs, err := GetSortedJobs(client, ns, selector, o.FieldSelector)
@@ -120,7 +136,21 @@ func (o *Options) Run() error {
 		return errors.Wrapf(err, "failed to get jobs")
 	}
 
-	return o.pickJobToLog(client, ns, selector, jobs)
+	err = o.pickJobToLog(client, ns, selector, jobs)
+	return o.handleErrorReporting(err)
+}
+
+func (o *Options) handleErrorReporting(err error) error {
+	if !o.LogFail {
+		return err
+	}
+
+	if err != nil {
+		logger.Logger().Infof("%s%s%s", PodResultPrefix, PodResultFailed, err.Error())
+	} else {
+		logger.Logger().Infof("%s%s", PodResultPrefix, PodResultOK)
+	}
+	return nil
 }
 
 func (o *Options) viewActiveJobLog(client kubernetes.Interface, ns string, selector string, jobName string) error {
@@ -131,6 +161,9 @@ func (o *Options) viewActiveJobLog(client kubernetes.Interface, ns string, selec
 			return err
 		}
 		if complete {
+			if o.VerifyResult {
+				return o.verifyResultInLastPod(client, ns, selector, jobName)
+			}
 			return nil
 		}
 		if pod == nil {
@@ -256,6 +289,56 @@ func (o *Options) waitForJobToExist(client kubernetes.Interface, ns, jobName str
 		}
 		time.Sleep(o.PollPeriod)
 	}
+}
+
+func (o *Options) verifyResultInLastPod(client kubernetes.Interface, ns string, selector string, name string) error {
+	opts := metav1.ListOptions{
+		LabelSelector: selector,
+	}
+	podInterface := client.CoreV1().Pods(ns)
+	ctx := context.TODO()
+	podList, err := podInterface.List(ctx, opts)
+	if err != nil && apierrors.IsNotFound(err) {
+		err = nil
+	}
+	if err != nil {
+		return errors.Wrapf(err, "failed to query ready pod in namespace %s with selector %s", ns, selector)
+	}
+	if podList == nil || len(podList.Items) == 0 {
+		return errors.Errorf("no pods found in namespace %s with selector %s", ns, selector)
+	}
+	pods := podList.Items
+
+	// lets find the latest pod
+	pod := pods[0]
+	for i := 1; i < len(pods); i++ {
+		p := pods[i]
+		if p.CreationTimestamp.After(pod.CreationTimestamp.Time) {
+			pod = p
+		}
+	}
+
+	// lets get the log of the pod
+	result := podInterface.GetLogs(pod.Name, &v1.PodLogOptions{
+		Container: o.ContainerName,
+	}).Do(ctx)
+	data, err := result.Raw()
+	if err != nil {
+		return errors.Wrapf(err, "failed to read logs in namespace %s pod %s", ns, pod.Name)
+	}
+	lines := strings.Split(string(data), "\n")
+	for _, line := range lines {
+		if strings.HasPrefix(line, PodResultPrefix) {
+			remaining := strings.TrimPrefix(line, PodResultPrefix)
+			remaining = strings.TrimSpace(remaining)
+			logger.Logger().Infof("pod %s has result %s", info(pod.Name), info(remaining))
+			if remaining == PodResultOK {
+				return nil
+			}
+			return errors.Errorf("pod %s %s", pod.Name, remaining)
+		}
+	}
+	return errors.Errorf("pod %s did not output expected line: %s", pod.Name, PodResultPrefix)
 }
 
 func (o *Options) waitForJobCompleteOrPodRunning(client kubernetes.Interface, ns, selector, jobName string) (bool, *corev1.Pod, error) {
