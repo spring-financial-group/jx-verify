@@ -262,6 +262,9 @@ func getDomain(client kubernetes.Interface, domain string, ingressNamespace stri
 			} else {
 				log.Logger().Infof("%s resolved to IP %s", termcolor.ColorInfo(address), termcolor.ColorInfo(addressIP))
 				address = addressIP
+
+				// its an IP address so lets append a DNS resolver so we can use it with DNS sub domains for ingress
+				defaultDomain = fmt.Sprintf("%s.nip.io", address)
 			}
 		} else {
 			// its an IP address so lets append a DNS resolver so we can use it with DNS sub domains for ingress
@@ -324,13 +327,11 @@ func (o *Options) Validate() error {
 	if err != nil {
 		return errors.Wrapf(err, "failed to create kube client")
 	}
-
 	return nil
 }
 
 // verifyDockerRegistry
 func verifyDockerRegistry(client kubernetes.Interface, requirements *jxcore.RequirementsConfig) error {
-
 	log.Logger().Infof("now verifying docker registry ingress setup")
 
 	if requirements.Cluster.Registry != "" {
