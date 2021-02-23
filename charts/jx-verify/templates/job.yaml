@@ -2,6 +2,8 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ template "verifyJob.name" . }}
+  annotations:
+    kapp.k14s.io/disable-wait: ""
   labels:
     app: {{ template "verifyJob.name" . }}
 spec:
@@ -10,6 +12,8 @@ spec:
   parallelism: 1
   template:
     metadata:
+      annotations:
+        kapp.k14s.io/disable-wait: ""
       labels:
         app: {{ template "verifyJob.name" . }}
         release: {{ .Release.Name }}
