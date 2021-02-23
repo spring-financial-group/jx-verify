@@ -4,6 +4,8 @@ metadata:
   name: {{ template "verifyJob.name" . }}
   labels:
     app: {{ template "verifyJob.name" . }}
+  annotations:
+    kapp.k14s.io/disable-wait: ""
 spec:
   backoffLimit: 1
   completions: 1
