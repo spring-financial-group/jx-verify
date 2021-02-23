@@ -12,9 +12,6 @@ spec:
   completions: 1
   parallelism: 1
   template:
-    metadata:
-      annotations:
-        kapp.k14s.io/disable-wait: ""
     spec:
       containers:
       - command:
