@@ -155,6 +155,7 @@ func (o *Options) handleErrorReporting(err error) error {
 
 func (o *Options) viewActiveJobLog(client kubernetes.Interface, ns string, selector string, jobName string) error {
 	var foundPods []string
+	logger.Logger().Infof("waiting for a running pod in namespace %s with selector %s", info(ns), info(selector))
 	for {
 		complete, pod, err := o.waitForJobCompleteOrPodRunning(client, ns, selector, jobName)
 		if err != nil {
@@ -273,7 +274,7 @@ func (o *Options) waitForJobToExist(client kubernetes.Interface, ns, jobName str
 	for {
 		job, err := client.BatchV1().Jobs(ns).Get(context.TODO(), jobName, metav1.GetOptions{})
 		if err == nil && job != nil {
-			logger.Logger().Infof("found Job %s", info(jobName))
+			logger.Logger().Infof("found Job %s in namespace %s", info(jobName), info(ns))
 			return job, nil
 		}
 		if err != nil && !apierrors.IsNotFound(err) {
@@ -358,7 +359,7 @@ func (o *Options) waitForJobCompleteOrPodRunning(client kubernetes.Interface, ns
 			return true, nil, nil
 		}
 
-		pod, err := pods.GetReadyPodForSelector(client, ns, selector)
+		pod, err := pods.GetRunningPodForSelector(client, ns, selector)
 		if err != nil {
 			return false, pod, errors.Wrapf(err, "failed to query ready pod in namespace %s with selector %s", ns, selector)
 		}
