@@ -20,3 +20,7 @@ verifyJob:
   # verifyJob.concurrencyPolicy -- Drives the job's concurrency policy
   concurrencyPolicy: Forbid
 
+jx:
+  # whether to create a Release CRD when installing charts with Release CRDs included
+  releaseCRD: true
+
