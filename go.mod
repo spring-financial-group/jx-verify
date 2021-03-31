@@ -1,4 +1,4 @@
-module github.com/jenkins-x/jx-verify
+module github.com/jenkins-x-plugins/jx-verify
 
 go 1.15
 
