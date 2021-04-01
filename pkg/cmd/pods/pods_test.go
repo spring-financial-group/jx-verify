@@ -2,7 +2,7 @@ package pods_test
 
 import (
 	"context"
-	"github.com/jenkins-x/jx-verify/pkg/cmd/pods"
+	"github.com/jenkins-x-plugins/jx-verify/pkg/cmd/pods"
 	"github.com/stretchr/testify/require"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

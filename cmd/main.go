@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/jenkins-x/jx-verify/cmd/app"
+	"github.com/jenkins-x-plugins/jx-verify/cmd/app"
 )
 
 // Entrypoint for the command
