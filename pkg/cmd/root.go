@@ -3,14 +3,14 @@ package cmd
 import (
 	"github.com/jenkins-x/jx-helpers/v3/pkg/cobras"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
-	"github.com/jenkins-x/jx-verify/pkg/cmd/ctx"
-	"github.com/jenkins-x/jx-verify/pkg/cmd/ingress"
-	"github.com/jenkins-x/jx-verify/pkg/cmd/install"
-	"github.com/jenkins-x/jx-verify/pkg/cmd/job"
-	"github.com/jenkins-x/jx-verify/pkg/cmd/pods"
-	"github.com/jenkins-x/jx-verify/pkg/cmd/tls"
-	"github.com/jenkins-x/jx-verify/pkg/cmd/version"
-	"github.com/jenkins-x/jx-verify/pkg/rootcmd"
+	"github.com/jenkins-x-plugins/jx-verify/pkg/cmd/ctx"
+	"github.com/jenkins-x-plugins/jx-verify/pkg/cmd/ingress"
+	"github.com/jenkins-x-plugins/jx-verify/pkg/cmd/install"
+	"github.com/jenkins-x-plugins/jx-verify/pkg/cmd/job"
+	"github.com/jenkins-x-plugins/jx-verify/pkg/cmd/pods"
+	"github.com/jenkins-x-plugins/jx-verify/pkg/cmd/tls"
+	"github.com/jenkins-x-plugins/jx-verify/pkg/cmd/version"
+	"github.com/jenkins-x-plugins/jx-verify/pkg/rootcmd"
 	"github.com/spf13/cobra"
 )
 

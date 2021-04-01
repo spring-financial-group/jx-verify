@@ -1,7 +1,7 @@
 package job_test
 
 import (
-	"github.com/jenkins-x/jx-verify/pkg/cmd/job"
+	"github.com/jenkins-x-plugins/jx-verify/pkg/cmd/job"
 	"k8s.io/client-go/kubernetes/fake"
 	"testing"
 )

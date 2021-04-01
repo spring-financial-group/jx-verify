@@ -6,7 +6,7 @@ import (
 
 	"github.com/cenkalti/backoff"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
-	"github.com/jenkins-x/jx-verify/pkg/rootcmd"
+	"github.com/jenkins-x-plugins/jx-verify/pkg/rootcmd"
 
 	"github.com/pkg/errors"
 
