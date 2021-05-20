@@ -14,7 +14,6 @@ import (
 	"github.com/jenkins-x/jx-helpers/v3/pkg/kube"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/termcolor"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
-	"github.com/jenkins-x-plugins/jx-verify/pkg/rootcmd"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -55,20 +54,32 @@ func NewCmdVerifyIngress() (*cobra.Command, *Options) {
 		Use:     "ingress",
 		Short:   "Verifies the ingress configuration defaulting the ingress domain if necessary",
 		Long:    cmdLong,
-		Example: fmt.Sprintf(cmdExample, rootcmd.BinaryName),
+		Example: cmdExample,
 		Run: func(cmd *cobra.Command, args []string) {
 			err := o.Run()
 			helper.CheckErr(err)
 		},
 	}
 	cmd.Flags().StringVarP(&o.Dir, "dir", "d", ".", "the directory to look for the values.yaml file")
-	cmd.Flags().StringVarP(&o.IngressNamespace, "ingress-namespace", "", DefaultIngressNamespace, "The namespace for the Ingress controller")
-	cmd.Flags().StringVarP(&o.IngressService, "ingress-service", "", DefaultIngressServiceName, "The name of the Ingress controller Service")
-
+	cmd.Flags().StringVarP(&o.IngressNamespace, "ingress-namespace", "", "", "The namespace for the Ingress controller. If not specified it defaults to $JX_INGRESS_NAMESPACE. Otherwise it defaults to: "+DefaultIngressNamespace)
+	cmd.Flags().StringVarP(&o.IngressService, "ingress-service", "", "", "The name of the Ingress controller Service. If not specified it defaults to $JX_INGRESS_SERVICE. Otherwise it defaults to: "+DefaultIngressServiceName)
 	return cmd, o
 }
 
 func (o *Options) Run() error {
+	if o.IngressNamespace == "" {
+		o.IngressNamespace = os.Getenv("JX_INGRESS_NAMESPACE")
+		if o.IngressNamespace == "" {
+			o.IngressNamespace = DefaultIngressNamespace
+		}
+	}
+	if o.IngressService == "" {
+		o.IngressService = os.Getenv("JX_INGRESS_SERVICE")
+		if o.IngressService == "" {
+			o.IngressService = DefaultIngressServiceName
+		}
+	}
+
 	var err error
 	if o.Dir == "" {
 		o.Dir, err = os.Getwd()
