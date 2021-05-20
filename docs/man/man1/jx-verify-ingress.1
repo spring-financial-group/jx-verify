@@ -28,18 +28,18 @@ Verifies the ingress configuration defaulting the ingress domain if necessary
     help for ingress
 
 .PP
-\fB\-\-ingress\-namespace\fP="nginx"
-    The namespace for the Ingress controller
+\fB\-\-ingress\-namespace\fP=""
+    The namespace for the Ingress controller. If not specified it defaults to $JX\_INGRESS\_NAMESPACE. Otherwise it defaults to: nginx
 
 .PP
-\fB\-\-ingress\-service\fP="ingress\-nginx\-controller"
-    The name of the Ingress controller Service
+\fB\-\-ingress\-service\fP=""
+    The name of the Ingress controller Service. If not specified it defaults to $JX\_INGRESS\_SERVICE. Otherwise it defaults to: ingress\-nginx\-controller
 
 
 .SH EXAMPLE
 .PP
 # populate the ingress domain if not using a configured 'ingress.domain' setting
-  jx verify ingress%!(EXTRA string=jx\-verify)
+  jx verify ingress
 
 
 .SH SEE ALSO
