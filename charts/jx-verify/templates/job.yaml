@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: {{ template "verifyJob.name" . }}
+  name: {{ template "verifyJob.name" . }}
   annotations:
     kapp.k14s.io/disable-wait: ""
   labels:
