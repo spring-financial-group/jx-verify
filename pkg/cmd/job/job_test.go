@@ -14,5 +14,4 @@ func TestVerifyJob(t *testing.T) {
 	o.KubeClient = kubeClient
 	o.Namespace = ns
 
-	// TODO
 }
