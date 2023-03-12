@@ -27,7 +27,7 @@ import (
 // ErrImagePullMessage the message on an event if it can't pull a pod
 const ErrImagePullMessage = "Error: ErrImagePull"
 
-//  ErrImagePullBackOffMessage if we are backing off
+// ErrImagePullBackOffMessage if we are backing off
 const ErrImagePullBackOffMessage = "Error: ImagePullBackOff"
 
 var (
